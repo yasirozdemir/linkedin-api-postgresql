@@ -20,6 +20,7 @@ ExperiencesRouter.get("/:userId/experiences", async (req, res, next) => {
   try {
     const { count, rows } = await ExperiencesModel.findAndCountAll({
       where: { userId: req.params.userId },
+      attributes: { exclude: ["createdAt", "updatedAt", "userId"] },
     });
     res.send({ numOfExperiences: count, experiences: rows });
   } catch (error) {
@@ -29,7 +30,9 @@ ExperiencesRouter.get("/:userId/experiences", async (req, res, next) => {
 
 ExperiencesRouter.get("/:userId/experiences/:expId", async (req, res, next) => {
   try {
-    const experience = await ExperiencesModel.findByPk(req.params.expId);
+    const experience = await ExperiencesModel.findByPk(req.params.expId, {
+      attributes: { exclude: ["createdAt", "updatedAt", "userId"] },
+    });
     if (experience) res.send(experience);
     else next(exp404());
   } catch (error) {
