@@ -1,6 +1,7 @@
 import Express from "express";
 import UsersRouter from "../users/index.js";
 import PostsModel from "./model.js";
+import UsersModel from "../users/model.js";
 import { post404 } from "../../errorHandlers.js";
 
 const PostsRouter = Express.Router();
@@ -17,7 +18,12 @@ PostsRouter.post("/", async (req, res, next) => {
 // GET all posts in the database
 PostsRouter.get("/", async (req, res, next) => {
   try {
-    const { count, rows } = await PostsModel.findAndCountAll();
+    const { count, rows } = await PostsModel.findAndCountAll({
+      include: {
+        model: UsersModel,
+        attributes: ["firstName", "lastName", "title"],
+      },
+    });
     res.send({ numOfPosts: count, posts: rows });
   } catch (error) {
     next(error);
@@ -29,6 +35,10 @@ UsersRouter.get("/:userId/posts", async (req, res, next) => {
   try {
     const { count, rows } = await PostsModel.findAndCountAll({
       where: { userId: req.params.userId },
+      include: {
+        model: UsersModel,
+        attributes: ["firstName", "lastName", "title"],
+      },
     });
     res.send({ numOfPosts: count, posts: rows });
   } catch (error) {
@@ -38,7 +48,12 @@ UsersRouter.get("/:userId/posts", async (req, res, next) => {
 
 PostsRouter.get("/:postId", async (req, res, next) => {
   try {
-    const post = await PostsModel.findByPk(req.params.postId);
+    const post = await PostsModel.findByPk(req.params.postId, {
+      include: {
+        model: UsersModel,
+        attributes: ["firstName", "lastName", "title"],
+      },
+    });
     if (post) res.send(post);
     else next(post404());
   } catch (error) {
