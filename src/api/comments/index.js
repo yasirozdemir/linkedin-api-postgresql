@@ -1,6 +1,7 @@
 import Express from "express";
 import CommentsModel from "./model.js";
 import { comment404 } from "../../errorHandlers.js";
+import UsersModel from "../users/model.js";
 
 const CommentsRouter = Express.Router();
 
@@ -20,6 +21,10 @@ CommentsRouter.get("/:postId/comments", async (req, res, next) => {
   try {
     const { count, rows } = await CommentsModel.findAndCountAll({
       where: { postId: req.params.postId },
+      include: {
+        model: UsersModel,
+        attributes: ["firstName", "lastName", "image"],
+      },
     });
     res.send({ numOfComments: count, comments: rows });
   } catch (error) {
@@ -29,7 +34,12 @@ CommentsRouter.get("/:postId/comments", async (req, res, next) => {
 
 CommentsRouter.get("/:postId/comments/:commentId", async (req, res, next) => {
   try {
-    const comment = await CommentsModel.findByPk(req.params.commentId);
+    const comment = await CommentsModel.findByPk(req.params.commentId, {
+      include: {
+        model: UsersModel,
+        attributes: ["firstName", "lastName", "image"],
+      },
+    });
     if (comment) res.send(comment);
     else next(comment404());
   } catch (error) {
