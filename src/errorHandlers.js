@@ -29,3 +29,4 @@ export const genericErrorHandler = (err, req, res, next) => {
 export const user404 = () => createHttpError(404, "User not found!");
 export const exp404 = () => createHttpError(404, "Experience not found!");
 export const post404 = () => createHttpError(404, "Post not found!");
+export const comment404 = () => createHttpError(404, "Comment not found!");
