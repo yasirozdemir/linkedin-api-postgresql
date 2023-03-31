@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../dbConfig.js";
-import UsersModel from "../users/model.js";
 
 const ExperiencesModel = sequelize.define("experience", {
   expId: {

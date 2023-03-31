@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../dbConfig.js";
 import ExperiencesModel from "../experiences/model.js";
+import PostsModel from "../posts/model.js";
 
 const UsersModel = sequelize.define("user", {
   userId: {
@@ -38,10 +39,19 @@ const UsersModel = sequelize.define("user", {
   },
 });
 
+// user -> one-to-many -> experiences
 UsersModel.hasMany(ExperiencesModel, {
   foreignKey: { name: "userId", allowNull: false },
 });
 ExperiencesModel.belongsTo(UsersModel, {
+  foreignKey: { name: "userId", allowNull: false },
+});
+
+// user -> one-to-many -> posts
+UsersModel.hasMany(PostsModel, {
+  foreignKey: { name: "userId", allowNull: false },
+});
+PostsModel.belongsTo(UsersModel, {
   foreignKey: { name: "userId", allowNull: false },
 });
 
