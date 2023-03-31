@@ -10,6 +10,4 @@
 
 ## TODOs
 
-- Add joins where necessary
-- Add comments crud
-- Add image upload endpoints
+- ✅
