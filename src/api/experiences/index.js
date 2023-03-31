@@ -1,45 +1,68 @@
 import Express from "express";
+import ExperiencesModel from "./model.js";
+import { exp404 } from "../../errorHandlers.js";
 
 const ExperiencesRouter = Express.Router();
 
-ExperiencesRouter.post("/experiences", async (req, res, next) => {
+ExperiencesRouter.post("/:userId/experiences", async (req, res, next) => {
   try {
-    res.status(201).send();
+    const { expId } = await ExperiencesModel.create({
+      ...req.body,
+      userId: req.params.userId,
+    });
+    res.status(201).send({ expId });
   } catch (error) {
     next(error);
   }
 });
 
-ExperiencesRouter.get("/experiences", async (req, res, next) => {
+ExperiencesRouter.get("/:userId/experiences", async (req, res, next) => {
   try {
-    res.send();
+    const { count, rows } = await ExperiencesModel.findAndCountAll({
+      where: { userId: req.params.userId },
+    });
+    res.send({ numOfExperiences: count, experiences: rows });
   } catch (error) {
     next(error);
   }
 });
 
-ExperiencesRouter.get("/experiences/:expId", async (req, res, next) => {
+ExperiencesRouter.get("/:userId/experiences/:expId", async (req, res, next) => {
   try {
-    res.send();
+    const experience = await ExperiencesModel.findByPk(req.params.expId);
+    if (experience) res.send(experience);
+    else next(exp404());
   } catch (error) {
     next(error);
   }
 });
 
-ExperiencesRouter.put("/experiences/:expId", async (req, res, next) => {
+ExperiencesRouter.put("/:userId/experiences/:expId", async (req, res, next) => {
   try {
-    res.send();
+    const [numOfEditedExp, editedExp] = await ExperiencesModel.update(
+      req.body,
+      { where: { expId: req.params.expId }, returning: true }
+    );
+    if (numOfEditedExp !== 0) res.send(editedExp);
+    else next(exp404());
   } catch (error) {
     next(error);
   }
 });
 
-ExperiencesRouter.delete("/experiences/:expId", async (req, res, next) => {
-  try {
-    res.status(204).send();
-  } catch (error) {
-    next(error);
+ExperiencesRouter.delete(
+  "/:userId/experiences/:expId",
+  async (req, res, next) => {
+    try {
+      const numOfDeletedExp = await ExperiencesModel.destroy({
+        where: { expId: req.params.expId },
+      });
+      if (numOfDeletedExp !== 0) res.status(204).send();
+      else next(exp404());
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 export default ExperiencesRouter;

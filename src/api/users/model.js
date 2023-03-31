@@ -38,4 +38,11 @@ const UsersModel = sequelize.define("user", {
   },
 });
 
+UsersModel.hasMany(ExperiencesModel, {
+  foreignKey: { name: "userId", allowNull: false },
+});
+ExperiencesModel.belongsTo(UsersModel, {
+  foreignKey: { name: "userId", allowNull: false },
+});
+
 export default UsersModel;

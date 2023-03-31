@@ -1,3 +1,4 @@
+import createHttpError from "http-errors";
 import { ValidationError } from "sequelize";
 
 export const badRequestHandler = (err, req, res, next) => {
