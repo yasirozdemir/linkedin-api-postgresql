@@ -2,6 +2,7 @@ import Express from "express";
 import UsersModel from "./model.js";
 import q2s from "query-to-sequelize";
 import { user404 } from "../../errorHandlers.js";
+import ExperiencesModel from "../experiences/model.js";
 
 const UsersRouter = Express.Router();
 
@@ -22,6 +23,11 @@ UsersRouter.get("/", async (req, res, next) => {
       order: options.sort,
       offset: options.skip,
       limit: options.limit,
+      include: {
+        model: ExperiencesModel,
+        attributes: { exclude: ["createdAt", "updatedAt", "userId"] },
+      },
+      attributes: { exclude: ["createdAt, updatedAt"] },
     });
     res.send({ numberOfUsers: count, users: rows });
   } catch (error) {
@@ -31,7 +37,13 @@ UsersRouter.get("/", async (req, res, next) => {
 
 UsersRouter.get("/:userId", async (req, res, next) => {
   try {
-    const user = await UsersModel.findByPk(req.params.userId);
+    const user = await UsersModel.findByPk(req.params.userId, {
+      include: {
+        model: ExperiencesModel,
+        attributes: { exclude: ["createdAt", "updatedAt", "userId"] },
+      },
+      attributes: { exclude: ["createdAt, updatedAt"] },
+    });
     if (user) res.send(user);
     else next(user404());
   } catch (error) {
