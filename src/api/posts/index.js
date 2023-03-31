@@ -21,7 +21,7 @@ PostsRouter.get("/", async (req, res, next) => {
     const { count, rows } = await PostsModel.findAndCountAll({
       include: {
         model: UsersModel,
-        attributes: ["firstName", "lastName", "title"],
+        attributes: ["firstName", "lastName", "title", "image"],
       },
     });
     res.send({ numOfPosts: count, posts: rows });
@@ -37,7 +37,7 @@ UsersRouter.get("/:userId/posts", async (req, res, next) => {
       where: { userId: req.params.userId },
       include: {
         model: UsersModel,
-        attributes: ["firstName", "lastName", "title"],
+        attributes: ["firstName", "lastName", "title", "image"],
       },
     });
     res.send({ numOfPosts: count, posts: rows });
@@ -51,7 +51,7 @@ PostsRouter.get("/:postId", async (req, res, next) => {
     const post = await PostsModel.findByPk(req.params.postId, {
       include: {
         model: UsersModel,
-        attributes: ["firstName", "lastName", "title"],
+        attributes: ["firstName", "lastName", "title", "image"],
       },
     });
     if (post) res.send(post);

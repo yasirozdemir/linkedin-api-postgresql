@@ -23,11 +23,6 @@ UsersRouter.get("/", async (req, res, next) => {
       order: options.sort,
       offset: options.skip,
       limit: options.limit,
-      include: {
-        model: ExperiencesModel,
-        attributes: { exclude: ["createdAt", "updatedAt", "userId"] },
-      },
-      attributes: { exclude: ["createdAt, updatedAt"] },
     });
     res.send({ numberOfUsers: count, users: rows });
   } catch (error) {
