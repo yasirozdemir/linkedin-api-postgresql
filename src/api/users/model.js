@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../dbConfig.js";
+import ExperiencesModel from "../experiences/model.js";
 
 const UsersModel = sequelize.define("user", {
   userId: {
@@ -33,6 +34,7 @@ const UsersModel = sequelize.define("user", {
   },
   image: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
 });
 

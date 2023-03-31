@@ -8,6 +8,7 @@ import {
 } from "./errorHandlers.js";
 import { pgConnect } from "./dbConfig.js";
 import UsersRouter from "./api/users/index.js";
+import ExperiencesRouter from "./api/experiences/index.js";
 
 const server = Express();
 const port = process.env.PORT || 3001;
@@ -16,6 +17,7 @@ server.use(cors());
 server.use(Express.json());
 
 server.use("/users", UsersRouter);
+server.use("/users", ExperiencesRouter);
 
 server.use(badRequestHandler);
 server.use(notFoundHandler);

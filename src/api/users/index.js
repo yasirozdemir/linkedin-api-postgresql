@@ -1,11 +1,9 @@
 import Express from "express";
 import UsersModel from "./model.js";
 import q2s from "query-to-sequelize";
-import createHttpError from "http-errors";
+import { user404 } from "../../errorHandlers.js";
 
 const UsersRouter = Express.Router();
-
-const user404 = () => createHttpError(404, "User not found!");
 
 UsersRouter.post("/", async (req, res, next) => {
   try {
