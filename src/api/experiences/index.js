@@ -1,6 +1,7 @@
 import Express from "express";
 import ExperiencesModel from "./model.js";
 import { exp404 } from "../../errorHandlers.js";
+import { expImgUploader } from "../../lib/cloudinary.js";
 
 const ExperiencesRouter = Express.Router();
 
@@ -15,6 +16,23 @@ ExperiencesRouter.post("/:userId/experiences", async (req, res, next) => {
     next(error);
   }
 });
+
+ExperiencesRouter.post(
+  "/:userId/experiences/:expId/image",
+  expImgUploader,
+  async (req, res, next) => {
+    try {
+      const [numOfEditedExp, updatedExp] = await ExperiencesModel.update(
+        { image: req.file.path },
+        { where: { expId: req.params.expId }, returning: true }
+      );
+      if (numOfEditedExp !== 0) res.send(updatedExp[0]);
+      else next(exp404());
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 ExperiencesRouter.get("/:userId/experiences", async (req, res, next) => {
   try {

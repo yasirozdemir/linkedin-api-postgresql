@@ -1,8 +1,9 @@
 import Express from "express";
 import UsersModel from "./model.js";
+import { post404, user404 } from "../../errorHandlers.js";
 import q2s from "query-to-sequelize";
-import { user404 } from "../../errorHandlers.js";
 import ExperiencesModel from "../experiences/model.js";
+import { pfpUploader } from "../../lib/cloudinary.js";
 
 const UsersRouter = Express.Router();
 
@@ -10,6 +11,19 @@ UsersRouter.post("/", async (req, res, next) => {
   try {
     const { userId } = await UsersModel.create(req.body);
     res.status(201).send({ userId });
+  } catch (error) {
+    next(error);
+  }
+});
+
+UsersRouter.post("/:userId/pfp", pfpUploader, async (req, res, next) => {
+  try {
+    const [numOfEditedUsers, updatedUsers] = await UsersModel.update(
+      { image: req.file.path },
+      { where: { userId: req.params.userId }, returning: true }
+    );
+    if (numOfEditedUsers !== 0) res.send(updatedUsers[0]);
+    else next(post404());
   } catch (error) {
     next(error);
   }
@@ -48,11 +62,11 @@ UsersRouter.get("/:userId", async (req, res, next) => {
 
 UsersRouter.put("/:userId", async (req, res, next) => {
   try {
-    const [numOfEditedUser, updatedUsers] = await UsersModel.update(req.body, {
+    const [numOfEditedUsers, updatedUsers] = await UsersModel.update(req.body, {
       where: { userId: req.params.userId },
       returning: true,
     });
-    if (numOfEditedUser !== 0) res.send(updatedUsers[0]);
+    if (numOfEditedUsers !== 0) res.send(updatedUsers[0]);
     else next(user404());
   } catch (error) {
     next(error);

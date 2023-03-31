@@ -3,6 +3,7 @@ import UsersRouter from "../users/index.js";
 import PostsModel from "./model.js";
 import UsersModel from "../users/model.js";
 import { post404 } from "../../errorHandlers.js";
+import { PostImgUploader } from "../../lib/cloudinary.js";
 
 const PostsRouter = Express.Router();
 
@@ -10,6 +11,19 @@ PostsRouter.post("/", async (req, res, next) => {
   try {
     const { postId } = await PostsModel.create(req.body);
     res.status(201).send({ postId });
+  } catch (error) {
+    next(error);
+  }
+});
+
+PostsRouter.post("/:postId/image", PostImgUploader, async (req, res, next) => {
+  try {
+    const [numOfEditedPosts, editedPosts] = await PostsModel.update(
+      { image: req.file.path },
+      { where: { postId: req.params.postId }, returning: true }
+    );
+    if (numOfEditedPosts !== 0) res.send(editedPosts[0]);
+    else next(post404());
   } catch (error) {
     next(error);
   }
